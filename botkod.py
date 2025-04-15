@@ -1,7 +1,8 @@
 import json
 import os
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove, BotCommand
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, ContextTypes, ConversationHandler, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, ContextTypes, \
+    ConversationHandler, filters
 
 # توکن ربات
 BOT_TOKEN = "7231667091:AAF7ErllhYpfRjLzq8Msof9vX5cjU1x4ZXU"
@@ -13,7 +14,8 @@ IMAGE_PATH = "D:/python.py/pttttttt.png"
 DATA_FILE = "data.json"
 
 # آی‌دی ادمین‌ها
-ADMINS = [5921101573, 5928722311]
+ADMINS = [5928722311]
+
 
 # بارگذاری دیتا
 def load_data():
@@ -26,10 +28,12 @@ def load_data():
             data["codes"] = {}
         return data
 
+
 # ذخیره دیتا
 def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
 
 # شروع (/start)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -54,17 +58,21 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print("❌ خطا در ارسال عکس:", e)
         await update.message.reply_text("❌ ارسال عکس با مشکل مواجه شد.\n\n" + msg, reply_markup=inline_keyboard)
 
+
 # مرحله‌های افزودن کد
 SET_CODE = range(1)
 REMOVE_CODE = range(2)
 
+
 async def ask_for_codes(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id in ADMINS:
-        await update.message.reply_text("لطفاً ۵ کد ۸ رقمی را با + جدا کرده ارسال کنید.", reply_markup=ReplyKeyboardRemove())
+        await update.message.reply_text("لطفاً ۵ کد ۸ رقمی را با + جدا کرده ارسال کنید.",
+                                        reply_markup=ReplyKeyboardRemove())
         return SET_CODE
     else:
         await update.message.reply_text("⛔ دسترسی فقط برای ادمین است.", reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
+
 
 async def save_codes(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
@@ -91,14 +99,17 @@ async def save_codes(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(msg)
     return ConversationHandler.END
 
+
 # حذف همه کدها
 async def ask_for_removal(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id in ADMINS:
-        await update.message.reply_text("🔻 تایید کنید که می‌خواهید تمام کدها حذف شوند. هر متنی ارسال کنید تا ادامه یابد.")
+        await update.message.reply_text(
+            "🔻 تایید کنید که می‌خواهید تمام کدها حذف شوند. هر متنی ارسال کنید تا ادامه یابد.")
         return REMOVE_CODE
     else:
         await update.message.reply_text("⛔ دسترسی فقط برای ادمین است.")
         return ConversationHandler.END
+
 
 async def confirm_remove_code(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -110,6 +121,7 @@ async def confirm_remove_code(update: Update, context: ContextTypes.DEFAULT_TYPE
     else:
         await update.message.reply_text("⛔ دسترسی فقط برای ادمین است.")
     return ConversationHandler.END
+
 
 # نمایش کدها
 async def show_codes(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -125,11 +137,13 @@ async def show_codes(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("⛔ دسترسی فقط برای ادمین است.")
 
+
 # لغو عملیات
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["awaiting_code"] = False
     await update.message.reply_text("⛔ عملیات لغو شد.", reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
+
 
 # تغییر نام کانال
 async def change_channel_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -142,6 +156,7 @@ async def change_channel_name(update: Update, context: ContextTypes.DEFAULT_TYPE
     else:
         await update.message.reply_text("⛔ دسترسی فقط برای ادمین است.")
 
+
 # دکمه انتخاب کد
 async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -152,11 +167,14 @@ async def handle_inline_buttons(update: Update, context: ContextTypes.DEFAULT_TY
         keyboard = InlineKeyboardMarkup([
             [InlineKeyboardButton("❌ لغو ارسال کد", callback_data="cancel_code")]
         ])
-        await query.message.reply_text("🎯 لطفاً کد ۸ رقمی خود را ارسال کنید.\n\nمیتونی چندین کد وارد کنی. برای خروج روی دکمه زیر بزن.", reply_markup=keyboard)
+        await query.message.reply_text(
+            "🎯 لطفاً کد ۸ رقمی خود را ارسال کنید.\n\nمیتونی چندین کد وارد کنی. برای خروج روی دکمه زیر بزن.",
+            reply_markup=keyboard)
 
     elif query.data == "cancel_code":
         context.user_data["awaiting_code"] = False
         await query.message.reply_text("❌ ارسال کد متوقف شد.")
+
 
 # بررسی کد وارد شده
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -199,10 +217,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif update.effective_user.id in ADMINS:
         await update.message.reply_text("ℹ️ برای افزودن کد از دستور /setcod استفاده کنید.")
 
+
 # اجرای ربات
 if __name__ == "__main__":
     print("🤖 ربات در حال اجراست...")
     app = ApplicationBuilder().token(BOT_TOKEN).build()
+
 
     async def set_commands(app):
         await app.bot.set_my_commands([
@@ -212,6 +232,7 @@ if __name__ == "__main__":
             BotCommand("removecode", "حذف همه کدها (ادمین)"),
             BotCommand("cancel", "لغو عملیات فعلی")
         ])
+
 
     app.post_init = set_commands
 
