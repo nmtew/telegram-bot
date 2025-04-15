@@ -1,5 +1,20 @@
 {
-  "codes": {},
+  "codes": {
+    "AB12CD34": [
+      6316596663,
+      6565256580
+    ],
+    "ZX98YU76": [],
+    "QWERTY12": [],
+    "GH56JK78": [],
+    "MNBVXC90": [
+      6316596663
+    ]
+  },
   "channel_name": "سریال آنلاین",
-  "channel_photo": null
+  "channel_photo": null,
+  "admins": [
+    5928722311,
+    5921101573
+  ]
 }
